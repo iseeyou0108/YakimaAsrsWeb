@@ -1,0 +1,127 @@
+﻿@{
+    ViewBag.Title = "庫位狀態查詢維護";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<span class="layui-breadcrumb">
+    @Html.ActionLink("首頁", "Index", "Home")
+    <a><cite>庫存管理</cite></a>
+    <a><cite>@ViewBag.Title</cite></a>
+</span>
+<hr />
+
+<div class="demoTable">
+
+    <div class="layui-form layui-input-inline">
+        <select name="AsrsID" id="cbAsrsID">
+            <option value="0">請選取倉庫</option>
+            <option value="1">成品倉</option>
+            <option value="2">模具倉</option>
+        </select>
+    </div>
+    <div class="layui-form layui-input-inline">
+        <select name="BinSta" id="cbBinSta">
+            <option value="">庫位狀態</option>
+            <option value="_">空庫</option>
+            <option value="$">庫存庫位</option>
+            <option value="?">先入品</option>
+            <option value="O">出庫中</option>
+            <option value="I">入庫中</option>
+        </select>
+    </div>
+    <div class="layui-inline">
+        <input class="layui-input" name="id" id="demoReload" placeholder="模糊查詢" autocomplete="off">
+    </div>
+    <button class="layui-btn " data-type="reload">查詢</button>
+
+
+</div>
+
+
+<table class="layui-hide" id="LAY_table_user" lay-filter="WcsTrk"></table>
+
+<script type="text/html" id="DisableInTpl">
+    {{#  if(d.INHIBIT_IN_FLG === 'Y'){ }}
+    <span style="color: #d9534f;">{{ '是' }}</span>
+    {{#  } else { }}
+    {{ '否' }}
+    {{#  } }}
+</script>
+
+<script type="text/html" id="DisableOutTpl">
+    {{#  if(d.INHIBIT_OUT_FLG === 'Y'){ }}
+    <span style="color: #d9534f;">{{ '是' }}</span>
+    {{#  } else { }}
+    {{ '否' }}
+    {{#  } }}
+</script>
+
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="btnEmpty">轉空庫</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="btnPreload">轉先入品</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="btnStk">轉庫存庫位</a>
+</script>
+
+<script src="~/layui-v2.6.8/layui/layui.js"></script>
+<script>
+layui.use('table', function(){
+  var table = layui.table;
+
+  //方法级渲染
+  table.render({
+    elem: '#LAY_table_user'
+    , url: '@Url.Action("GetWmsBinstaData", "WMS")'
+    ,cols: [[
+        { field: 'ASRS_ID', title: '倉庫ID', width: 100, sort: true, fixed: true, align: 'right' }
+        , { field: 'WH_NO', title: '儲區', width: 80, sort: true, fixed: true }
+        , { field: 'BIN_NO', title: '庫位', width: 90, sort: true, fixed: true}
+        , { field: 'BIN_STA', title: '庫位狀態', width: 110, sort: true}
+        , { field: 'BIN_STA_DESC', title: '說明', width: 120, sort: true}
+        , { field: 'AREA', title: '材積率', width: 110, sort: true, align: 'right'}
+        , { field: 'SIZE_CHK', title: '庫位高低尺寸', width: 130, sort: true, align: 'right'}
+        , { field: 'INHIBIT_IN_FLG', title: '禁入', width: 100, sort: true, templet: '#DisableInTpl' }
+        , { field: 'INHIBIT_OUT_FLG', title: '禁出', width: 100, sort: true, templet: '#DisableOutTpl' }
+        , { fixed: 'right', title: '操作', toolbar: '#barDemo', width: 250 }
+    ]]
+      , id: 'tbWmsBinSta'
+      , page: true
+      , limit: 15
+      , limits:[15,20,25,30]
+      , curr:1
+      , height: 'full-210'
+      , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+      , defaultToolbar: ['filter', 'exports', 'print', { //自定义头部工具栏右侧图标。如无需自定义，去除该参数即可
+          title: '提示'
+          , layEvent: 'LAYTABLE_TIPS'
+          , icon: 'layui-icon-tips'
+      }]
+  });
+
+
+
+  var $ = layui.$, active = {
+    reload: function(){
+      var demoReload = $('#demoReload');
+
+      //执行重载
+          table.reload('tbWmsBinSta', {
+        page: {
+          curr: 1 //重新从第 1 页开始
+        }
+        ,where: {
+            SearchText: demoReload.val(),
+            AsrsID: $('#cbAsrsID').val(),
+            BinSta: $('#cbBinSta').val()
+        }
+      });
+    }
+  };
+
+  $('.demoTable .layui-btn').on('click', function(){
+    var type = $(this).data('type');
+    active[type] ? active[type].call(this) : '';
+  });
+
+
+});
+</script>

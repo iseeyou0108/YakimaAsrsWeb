@@ -1,0 +1,144 @@
+﻿@{
+    ViewBag.Title = "吊車狀態查詢維護";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<span class="layui-breadcrumb">
+    @Html.ActionLink("首頁", "Index", "Home")
+    <a><cite>作業管理</cite></a>
+    <a><cite>@ViewBag.Title</cite></a>
+</span>
+<hr />
+
+<div class="demoTable">
+    
+    <div class="layui-inline">
+        <input class="layui-input" name="id" id="demoReload" placeholder="Crane ID" autocomplete="off">
+    </div>
+    <button class="layui-btn" data-type="reload">查詢</button>
+</div>
+
+<script type="text/html" id="checkboxTpl">
+    <!-- 这里的 checked 的状态只是演示 -->
+    <input type="checkbox" name="lock" value="{{d.CRN_ERROR}}" title="異常" lay-filter="lockDemo" {{ d.CRN_ERROR > 0 ? 'checked' : '' }} disabled="disabled">
+</script>
+
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">Command Resend</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">Reset</a>
+</script>
+
+<table class="layui-hide" id="LAY_table_user" lay-filter="WcsCrn"></table>
+
+
+<script src="~/layui-v2.6.8/layui/layui.js"></script>
+<script>
+layui.use('table', function(){
+  var table = layui.table;
+
+  //方法级渲染
+  table.render({
+    elem: '#LAY_table_user'
+      , url: '@Url.Action("GetWcsCrnData", "WCS")'
+    ,cols: [[
+      {field:'ASRS_ID', title: '倉庫ID', width:120, sort: true, fixed: true}
+        , { field: 'CRN_ID', title: '吊車編號', width: 120, sort: true, fixed: true}
+      ,{field:'SER_NO', title: '序號', width:80, sort: true}
+      ,{field:'LOADING', title: '有載', width:80}
+        , { field: 'CRN_AUTO', title: '自動', width: 80 }
+        , { field: 'CRN_INITAL', title: '初始化', sort: true, width: 120 }
+      ,{field:'CRN_READY', title: '準備就緒', sort: true, width:120}
+        , { field: 'CRN_ERROR', title: '是否異常', sort: true, width: 120, templet: '#checkboxTpl'}
+        , { field: 'ERR_CODE', title: '異常碼', width: 120 }
+        , { fixed: 'right', title: '操作', toolbar: '#barDemo', width: 200 }
+      
+    ]]
+    ,id: 'tbWcsCrn'
+    ,page: true
+    , limit: 15
+    , limits: [15, 20, 25, 30]
+    , curr: 1
+    , height: 'full-210'
+  });
+
+    //监听行工具事件
+    table.on('tool(WcsCrn)', function (obj) {
+        var data = obj.data;
+        
+        //console.log(obj)
+        if (obj.event === 'del') {
+            layer.confirm('Reset Crane ' + data.CRN_ID + ' Confirm', function (index) {
+
+                //Post Command
+                $.ajax({
+                 type: "POST",
+                 url: "@Url.Action("CraneReset","WCS")",
+                 data: JSON.stringify(data),
+                    contentType: "application/json",
+                    success: function (response) {
+                        
+                        JSON.stringify(response);
+                        if (response.Successed) {
+                            table.reload('tbWcsCrn', {
+                                page: {
+                                    curr: 1 //重新从第 1 页开始
+                                }
+                                , where: {
+                                    SearchText: $('#demoReload').val()
+                                }
+                            });
+                            layer.msg('Send reset command successed.');
+                            layer.close(index);
+                        }
+                        else {
+                            
+                            layer.msg(response.Message, { icon: 5 });
+                        }
+                    },
+                    failure: function (errMsg) {
+                        alert(errMsg);
+                    },
+                    error: function (xhr, status, err) {
+                        alert(err);
+                    }
+                })
+
+                
+            });
+        } else if (obj.event === 'edit') {
+            layer.prompt({
+                formType: 2
+                , value: data.email
+            }, function (value, index) {
+                obj.update({
+                    email: value
+                });
+                layer.close(index);
+            });
+        }
+    });
+
+  var $ = layui.$, active = {
+    reload: function(){
+      var demoReload = $('#demoReload');
+
+      //执行重载
+        table.reload('tbWcsCrn', {
+        page: {
+          curr: 1 //重新从第 1 页开始
+        }
+        ,where: {
+            SearchText: demoReload.val()
+        }
+      });
+    }
+  };
+
+  $('.demoTable .layui-btn').on('click', function(){
+    var type = $(this).data('type');
+    active[type] ? active[type].call(this) : '';
+  });
+
+    
+});
+</script>

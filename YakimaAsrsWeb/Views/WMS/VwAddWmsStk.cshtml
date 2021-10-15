@@ -1,0 +1,150 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<link href="~/layui-v2.6.8/layui/css/layui.css" rel="stylesheet" />
+
+<br />
+
+<form class="layui-form" action="">
+    <div class="layui-form-item">
+        <label class="layui-form-label">倉別</label>
+        <div class="layui-input-inline">
+            <select name="ASRS_ID" lay-verify="required">
+                <option value=""></option>
+                <option value="1">成品倉</option>
+                <option value="2">半成品/模具倉</option>
+            </select>
+        </div>
+        <label class="layui-form-label">庫位</label>
+        <div class="layui-input-inline">
+            <input type="text" name="BIN_NO" required lay-verify="required" placeholder="請輸入庫位" autocomplete="off" class="layui-input">
+        </div>
+        <label class="layui-form-label">庫存類型</label>
+        <div class="layui-input-inline">
+            <select name="PROD_TYPE" lay-verify="required">
+                <option value=""></option>
+                <option value="0">成品/原物料</option>
+                <option value="1">五金加工件</option>
+                <option value="2">模具</option>
+                <option value="3">載具</option>
+                <option value="4">暫存品</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">庫存狀態</label>
+        <div class="layui-input-inline">
+            <select name="PROD_TYPE" lay-verify="required" lay-search>
+                <option value=""></option>
+                <option value="0">在庫</option>
+                <option value="100">工作檔入庫預約</option>
+                <option value="101">工作檔出庫預約</option>
+                <option value="2">撿料待回庫</option>
+                <option value="3">模具待回庫</option>
+                <option value="4">盤點待回庫</option>
+                <option value="5">庫存待驗</option>
+                <option value="6">工單領料鎖定</option>
+                <option value="7">併板待回庫</option>
+                <option value="8">模具庫外待使用</option>
+                <option value="9">模具待繳回</option>
+                <option value="10">五金待回庫</option>
+            </select>
+        </div>
+
+        @*<label class="layui-form-label">料號</label>
+        <div class="layui-input-inline">
+            @Html.DropDownList("ProdList", null, "請選擇", new { @id = "ProdList", @name = "ProdList", lay_search = "" })
+        </div>
+        <div class="layui-form-mid layui-word-aux">辅助文字</div>*@
+
+        <label class="layui-form-label">開關</label>
+        <div class="layui-input-inline">
+            <button class="layui-btn" onclick="OpenProductSearch()">選取料號</button>
+        </div>
+    </div>
+    
+    <div class="layui-form-item">
+        <label class="layui-form-label">选择框</label>
+        <div class="layui-input-block">
+            <select name="city" lay-verify="required">
+                <option value=""></option>
+                <option value="0">北京</option>
+                <option value="1">上海</option>
+                <option value="2">广州</option>
+                <option value="3">深圳</option>
+                <option value="4">杭州</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">复选框</label>
+        <div class="layui-input-block">
+            <input type="checkbox" name="like[write]" title="写作">
+            <input type="checkbox" name="like[read]" title="阅读" checked>
+            <input type="checkbox" name="like[dai]" title="发呆">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">开关</label>
+        <div class="layui-input-block">
+            <input type="checkbox" name="switch" lay-skin="switch">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">单选框</label>
+        <div class="layui-input-block">
+            <input type="radio" name="sex" value="男" title="男">
+            <input type="radio" name="sex" value="女" title="女" checked>
+        </div>
+    </div>
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">文本域</label>
+        <div class="layui-input-block">
+            <textarea name="desc" placeholder="请输入内容" class="layui-textarea"></textarea>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+
+<script src="~/layui-v2.6.8/layui/layui.js"></script>
+<script>
+//Demo
+layui.use('form', function(){
+  var form = layui.form;
+
+  //监听提交
+  form.on('submit(formDemo)', function(data){
+    layer.msg(JSON.stringify(data.field));
+    return false;
+  });
+    });
+
+    function OpenProductSearch() {
+        layer.open({
+            type: 2,
+            area: ['700px', '600px'],
+            fixed: false, //不固定
+            maxmin: true,
+            title: '選取料號',
+            btn: ['確定','取消'],
+            content: '@Url.Action("VwProdList","WMS")',
+            yes: function (index) {
+                var result = window["layui-layer-iframe" + index].returndata;
+                if (result != null) {
+                    layer.msg(returndata.ProdNo);
+                }
+                else {
+                    layer.msg('No Data');
+                }
+            }
+        });
+    }
+</script>

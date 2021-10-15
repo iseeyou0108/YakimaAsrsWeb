@@ -1,0 +1,123 @@
+﻿@{
+    ViewBag.Title = "設備狀態查詢";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<span class="layui-breadcrumb">
+    @Html.ActionLink("首頁", "Index", "Home")
+    <a><cite>作業管理</cite></a>
+    <a><cite>@ViewBag.Title</cite></a>
+</span>
+<hr />
+
+<div class="demoTable">
+
+    <div class="layui-form layui-input-inline">
+        <select name="AsrsID" id="cbAsrsID">
+            <option value="0">請選取倉庫</option>
+            <option value="1">成品倉</option>
+            <option value="2">模具倉</option>
+        </select>
+    </div>
+    <div class="layui-inline">
+        <input class="layui-input" name="id" id="demoReload" placeholder="設備編號" autocomplete="off">
+    </div>
+    <button class="layui-btn" data-type="reload">查詢</button>
+
+
+</div>
+<script type="text/html" id="switchTpERR">
+    <!-- 这里的 checked 的状态只是演示 -->
+    <input type="checkbox" name="ERR" value="{{d.ERR}}" lay-skin="switch" lay-text="On|" lay-filter="sexDemo" {{ d.ERR == true ? 'checked' : '' }}>
+</script>
+
+<script type="text/html" id="switchTpLoad">
+    <!-- 这里的 checked 的状态只是演示 -->
+    <input type="checkbox" name="LOAD" value="{{d.LOAD}}" lay-skin="switch" lay-text="On|" lay-filter="sexDemo" {{ d.LOAD == true ? 'checked' : '' }}>
+</script>
+
+<script type="text/html" id="switchTpAUTO">
+    <!-- 这里的 checked 的状态只是演示 -->
+    <input type="checkbox" name="AUTO" value="{{d.AUTO}}" lay-skin="switch" lay-text="On|" lay-filter="sexDemo" {{ d.AUTO == true ? 'checked' : '' }}>
+</script>
+
+<script type="text/html" id="switchTpAUTO_START">
+    <!-- 这里的 checked 的状态只是演示 -->
+    <input type="checkbox" name="AUTO_START" value="{{d.AUTO_START}}" lay-skin="switch" lay-text="On|" lay-filter="sexDemo" {{ d.AUTO_START == true ? 'checked' : '' }}>
+</script>
+
+<script type="text/html" id="switchTpIDLE">
+    <!-- 这里的 checked 的状态只是演示 -->
+    <input type="checkbox" name="IDLE" value="{{d.IDLE}}" lay-skin="switch" lay-text="On|" lay-filter="sexDemo" {{ d.IDLE == true ? 'checked' : '' }}>
+</script>
+
+<script type="text/html" id="switchTpSTKIN_REQ">
+    <!-- 这里的 checked 的状态只是演示 -->
+    <input type="checkbox" name="STKIN_REQ" value="{{d.STKIN_REQ}}" lay-skin="switch" lay-text="On|" lay-filter="sexDemo" {{ d.STKIN_REQ == true ? 'checked' : '' }}>
+</script>
+
+<table class="layui-hide" id="LAY_table_user" lay-filter="WcsTrk"></table>
+
+
+<script src="~/layui-v2.6.8/layui/layui.js"></script>
+<script>
+layui.use('table', function(){
+  var table = layui.table;
+
+  //方法级渲染
+  table.render({
+    elem: '#LAY_table_user'
+      , url: '@Url.Action("GetWcsDeviceData", "WCS")'
+    ,cols: [[
+        { field: 'ASRS_ID', title: '倉庫ID', width: 120, sort: true, fixed: true }
+        , { field: 'DEV_NO', title: '站台', width: 80, sort: true }
+        , { field: 'SER_NO', title: '序號', width: 80, sort: true }
+        , { field: 'DEST', title: '目的', width: 80, sort: true }
+        , { field: 'ERR', title: '異常', templet: '#switchTpERR', width: 100}
+        , { field: 'LOAD', title: '有載', templet: '#switchTpLoad', width: 100}
+        , { field: 'AUTO', title: '自動', templet: '#switchTpAUTO', width: 100}
+        , { field: 'AUTO_START', title: '自動啟動', templet: '#switchTpAUTO_START', width: 100 }
+        , { field: 'IDLE', title: '閒置', templet: '#switchTpIDLE', width: 100 }
+        , { field: 'STKIN_REQ', title: '入庫要求', templet: '#switchTpSTKIN_REQ', width: 100 }
+        , { field: 'IO_MODE', title: '出入庫模式', width: 120 }
+        , { field: 'IN_ENABLE', title: '入庫可', width: 100 }
+        , { field: 'OUT_ENABLE', title: '出庫可', width: 100 }
+        , { field: 'WEIGHT', title: '秤重重量', width: 100 }
+        , { field: 'SIZE_CHK', title: 'SIZE檢知', width: 110 }
+        , { field: 'OP_MODE', title: '作業模式', width: 100 }
+    ]]
+      , id: 'tbWcsDevice'
+      , page: true
+      , limit: 15
+      , limits:[15,20,25,30]
+      , curr:1
+    ,height: 'full-210'
+  });
+
+    
+
+  var $ = layui.$, active = {
+    reload: function(){
+      var demoReload = $('#demoReload');
+
+      //执行重载
+          table.reload('tbWcsDevice', {
+        page: {
+          curr: 1 //重新从第 1 页开始
+        }
+        ,where: {
+            SearchText: demoReload.val(),
+            AsrsID: $('#cbAsrsID').val()
+        }
+      });
+    }
+  };
+
+  $('.demoTable .layui-btn').on('click', function(){
+    var type = $(this).data('type');
+    active[type] ? active[type].call(this) : '';
+  });
+
+
+});
+</script>

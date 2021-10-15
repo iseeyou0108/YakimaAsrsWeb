@@ -1,0 +1,238 @@
+﻿@{
+    ViewBag.Title = "工作檔查詢維護";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<span class="layui-breadcrumb">
+    @Html.ActionLink("首頁", "Index", "Home")
+    <a><cite>作業管理</cite></a>
+    <a><cite>@ViewBag.Title</cite></a>
+</span>
+<hr />
+
+<div class="demoTable">
+
+        <div class="layui-form layui-input-inline">
+            <select name="AsrsID" id="cbAsrsID">
+                <option value="0">請選取倉庫</option>
+                <option value="1">成品倉</option>
+                <option value="2">模具倉</option>
+            </select>
+        </div>
+        <div class="layui-inline">
+            <input class="layui-input" name="id" id="demoReload" placeholder="模糊查詢" autocomplete="off">
+        </div>
+        <button class="layui-btn" data-type="reload">查詢</button>
+    
+    
+</div>
+
+
+
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="Cancel">強制取消</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="Complete">強制完成</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="StepChange">變更STEP</a>
+</script>
+
+<table class="layui-hide" id="LAY_table_user" lay-filter="WcsTrk"></table>
+
+
+<script src="~/layui-v2.6.8/layui/layui.js"></script>
+<script>
+layui.use('table', function(){
+  var table = layui.table;
+
+  //方法级渲染
+  table.render({
+    elem: '#LAY_table_user'
+      , url: '@Url.Action("GetWcsTrkData", "WCS")'
+    ,cols: [[
+      {field:'ASRS_ID', title: '倉庫ID', width:120, sort: true, fixed: true}
+        , { field: 'USE_CRN_ID', title: '吊車編號', width: 120, sort: true, fixed: true}
+      ,{field:'SER_NO', title: '序號', width:80, sort: true}
+      ,{field:'BIN_NO', title: '庫位', width:100}
+        , { field: 'DEV_NO', title: '站台', width: 80 }
+        , { field: 'CUR_DEV_NO', title: '當前站台', sort: true, width: 120 }
+      ,{field:'NEXT_DEV_NO', title: '下一站台', sort: true, width:120}
+
+        , { field: 'IO', title: 'IO', width: 60 }
+        , { field: 'IO_DESC', title: 'IO說明', width: 120 }
+        , { field: 'STEP', title: 'STEP', width: 80 }
+        , { field: 'STEP_DESC', title: 'STEP說明', width: 180 }
+        , { field: 'STATUS', title: 'STATUS', width: 100 }
+        , { field: 'STATUS_DESC', title: 'STATUS說明', width: 180 }
+        , { field: 'OPN', title: 'OPN', width: 80 }
+        , { field: 'OPN_DESC', title: 'OPN說明', width: 180 }
+        , { field: 'EMERGE', title: 'EMERGE', width: 100 }
+        , { field: 'SIZE_CHK', title: '庫位尺寸', width: 120 }
+        , { field: 'CREATE_DATE', title: '建檔時間', width: 200 }
+        , { field: 'USER_NAME', title: '作業人員', width: 120 }
+        , { fixed: 'right', title: '操作', toolbar: '#barDemo', width: 250 }
+
+    ]]
+      , id: 'tbWcsTrk'
+    ,page: true
+    , limit: 15
+    , limits: [15, 20, 25, 30]
+    , curr: 1
+    , height: 'full-210'
+  });
+
+    //监听行工具事件
+    table.on('tool(WcsTrk)', function (obj) {
+        var data = obj.data;
+
+        //強制取消
+        if (obj.event === 'Cancel') {
+            layer.confirm('Force Cancel Trk ' + data.SER_NO + ' Confirm', function (index) {
+
+                //Post Command
+                $.ajax({
+                 type: "POST",
+                 url: "@Url.Action("CancelTrk", "WCS")",
+                 data: JSON.stringify(data),
+                    contentType: "application/json",
+                    success: function (response) {
+
+                        JSON.stringify(response);
+                        if (response.Successed) {
+                            table.reload('tbWcsTrk', {
+                                page: {
+                                    curr: 1 //重新从第 1 页开始
+                                }
+                                , where: {
+                                    SearchText: $('#demoReload').val(),
+                                    AsrsID: $('#cbAsrsID').val()
+                                }
+                            });
+                            layer.msg('強制取消成功~');
+                            layer.close(index);
+                        }
+                        else {
+
+                            layer.msg(response.Message, { icon: 5 });
+                        }
+                    },
+                    failure: function (errMsg) {
+                        alert(errMsg);
+                    },
+                    error: function (xhr, status, err) {
+                        layer.msg(err, { icon: 5 });
+                    }
+                })
+
+
+            });
+        } else if (obj.event === 'Complete') {
+            layer.confirm('Force Complete Trk ' + data.SER_NO + ' Confirm', function (index) {
+
+                //Post Command
+                $.ajax({
+                 type: "POST",
+                 url: "@Url.Action("CompleteTrk", "WCS")",
+                 data: JSON.stringify(data),
+                    contentType: "application/json",
+                    success: function (response) {
+
+                        JSON.stringify(response);
+                        if (response.Successed) {
+                            table.reload('tbWcsTrk', {
+                                page: {
+                                    curr: 1 //重新从第 1 页开始
+                                }
+                                , where: {
+                                    SearchText: $('#demoReload').val(),
+                                    AsrsID: $('#cbAsrsID').val()
+                                }
+                            });
+                            layer.msg('強制完成成功~');
+                            layer.close(index);
+                        }
+                        else {
+
+                            layer.msg(response.Message, { icon: 5 });
+                        }
+                    },
+                    failure: function (errMsg) {
+                        alert(errMsg);
+                    },
+                    error: function (xhr, status, err) {
+                        layer.msg(err, { icon: 5 });
+                    }
+                })
+
+
+            });
+        }
+        else if (obj.event === 'StepChange') {
+            layer.prompt({
+                formType: 2,
+                value: '0',
+                title: '請輸入STEP',
+                area: ['150px', '20px'] //自定义文本域宽高
+            }, function (value, index, elem) {
+                    var request = JSON.stringify({ 'Trk': data, 'STEP': value });
+                //Post Command
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("ChangeTrkStep", "WCS")",
+                    data: request,
+                    contentType: "application/json",
+                    success: function (response) {
+
+                        JSON.stringify(response);
+                        if (response.Successed) {
+                            table.reload('tbWcsTrk', {
+                                page: {
+                                    curr: 1 //重新从第 1 页开始
+                                }
+                                , where: {
+                                    SearchText: $('#demoReload').val(),
+                                    AsrsID: $('#cbAsrsID').val()
+                                }
+                            });
+                            layer.msg('STEP變更成功~');
+                            layer.close(index);
+                        }
+                        else {
+
+                            layer.msg(response.Message, { icon: 5 });
+                        }
+                    },
+                    failure: function (errMsg) {
+                        alert(errMsg);
+                    },
+                    error: function (xhr, status, err) {
+                        layer.msg(err, { icon: 5 });
+                    }
+                })
+            });
+        }
+    });
+
+  var $ = layui.$, active = {
+    reload: function(){
+      var demoReload = $('#demoReload');
+
+      //执行重载
+        table.reload('tbWcsTrk', {
+        page: {
+          curr: 1 //重新从第 1 页开始
+        }
+        ,where: {
+            SearchText: demoReload.val(),
+            AsrsID: $('#cbAsrsID').val()
+        }
+      });
+    }
+  };
+
+  $('.demoTable .layui-btn').on('click', function(){
+    var type = $(this).data('type');
+    active[type] ? active[type].call(this) : '';
+  });
+
+
+});
+</script>
