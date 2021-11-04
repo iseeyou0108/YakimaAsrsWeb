@@ -1,0 +1,82 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>登录页</title>
+    <link href="~/layui-v2.6.8/layui/css/layui.css" rel="stylesheet" />
+    <link href="~/Content/Style.css" rel="stylesheet" />
+
+</head>
+<body>
+
+    <div class="login-main">
+        <header class="layui-elip">登录</header>
+        <form class="layui-form">
+            <div class="layui-input-inline">
+                <input type="text" name="UserNo" required lay-verify="required" placeholder="用户名" autocomplete="off"
+                       class="layui-input">
+            </div>
+            <div class="layui-input-inline">
+                <input type="password" name="Password" required lay-verify="required" placeholder="密码" autocomplete="off"
+                       class="layui-input">
+            </div>
+            <div class="layui-input-inline login-btn">
+                <button lay-submit lay-filter="login" class="layui-btn"><i class="layui-icon layui-icon-ok"></i> 登录</button>
+            </div>
+            <hr />
+            <!--<div class="layui-input-inline">
+                <button type="button" class="layui-btn layui-btn-primary">QQ登录</button>
+            </div>
+            <div class="layui-input-inline">
+                <button type="button" class="layui-btn layui-btn-normal">微信登录</button>
+            </div>-->
+            @*<p><a href="register.html" class="fl">立即注册</a><a href="javascript:;" class="fr">忘记密码？</a></p>*@
+        </form>
+    </div>
+
+
+    <script src="~/layui-v2.6.8/layui/layui.js"></script>
+    <script type="text/javascript">
+        layui.use(['form', 'layer', 'jquery'], function () {
+
+            // 操作对象
+            var form = layui.form;
+            var $ = layui.jquery;
+            form.on('submit(login)', function (data) {
+                    $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("Login", "Account")",
+                    data: JSON.stringify(data.field),
+                    contentType: "application/json",
+                    success: function (response) {
+
+                        JSON.stringify(response);
+                        if (response.Successed) {
+                            location.href = "@Url.Action("Index", "Home")";
+                        }
+                        else {
+
+                            layer.msg(response.Message, { icon: 5 });
+                        }
+                    },
+                    failure: function (errMsg) {
+                        layer.msg(errMsg, { icon: 5 });
+                        return false;
+                    },
+                    error: function (xhr, status, err) {
+                        layer.msg(err, { icon: 5 });
+                    }
+                })
+                return false;
+            })
+
+        });
+    </script>
+</body>
+</html>

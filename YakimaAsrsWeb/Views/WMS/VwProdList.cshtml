@@ -2,33 +2,77 @@
     Layout = null;
 }
 <link href="~/layui-v2.6.8/layui/css/layui.css" rel="stylesheet" />
+
+<div class="demoTable">
+
+    <div class="layui-inline">
+        <input class="layui-input" name="id" id="demoReload" placeholder="模糊查詢" autocomplete="off">
+    </div>
+    <button class="layui-btn" data-type="reload">查詢</button>
+
+
+</div>
+
 <table class="layui-hide" id="tbWmsPord" lay-filter="WmsProd"></table>
 
 <script src="~/layui-v2.6.8/layui/layui.js"></script>
 
-<script>
-layui.use('table', function(){
-  var table = layui.table;
+<script type="text/javascript">
+    var SelectedItem = {};
+    layui.use('table', function(){
+      var table = layui.table;
 
-  //方法级渲染
-  table.render({
-      elem: '#tbWmsPord'
-      , url: '@Url.Action("GetWmsProdData", "WMS")'
-      , cols: [[
-         { field: 'ProdNo', title: '料號', width: 250, sort: true }
-        , { field: 'ProdName', title: '物料描述', width: 350, sort: true }
-    ]]
-      , id: 'tbWmsPord'
-      , page: true
-      , limit: 15
-      , limits:[15,20,25,30]
-      , curr:1
-      , height: 'full'
+      //方法级渲染
+      table.render({
+          elem: '#tbWmsPord'
+          , url: '@Url.Action("GetWmsProdData", "WMS")'
+          , cols: [[
+              { field: 'ProdNo', title: '料號', width: 250, sort: true, filter: true }
+              , { field: 'ProdName', title: '物料描述', width: 350, sort: true, filter: true }
+        ]]
+          , id: 'tbWmsPord'
+          , page: true
+          , limit: 15
+          , limits:[15,20,25,30]
+          , curr:1
+          , height: 'full'
       
-  });
-;
+      });
+
+        table.on('row(WmsProd)', function (obj) {
+            obj.tr.addClass('layui-bg-cyan').siblings().removeClass('layui-bg-cyan');
+            SelectedItem.ProdNo = obj.data.ProdNo;
+            SelectedItem.ProdName = obj.data.ProdName;
+            
+        });
 
 
-});
+        var $ = layui.$, active = {
+            reload: function () {
+                var demoReload = $('#demoReload');
+
+                //执行重载
+                table.reload('tbWmsPord', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                    , where: {
+                        SearchText: demoReload.val()
+                    }
+                });
+            }
+        };
+
+        $('.demoTable .layui-btn').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+    });
+    function returndata() {
+        return SelectedItem;
+    };
+
+    
 </script>
 

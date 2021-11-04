@@ -11,9 +11,17 @@
 <hr />
 
 <script type="text/html" id="toolbarDemo">
-    <div class="layui-btn-container">
-        <button class="layui-btn layui-btn-sm" lay-event="add">新增</button>
-        <button class="layui-btn layui-btn-danger layui-btn-sm" lay-event="delete">刪除</button>
+    
+    <div class="layui-btn-group">
+        <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" lay-event="add">
+            <i class="layui-icon">&#xe654;</i>
+        </button>
+        <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" lay-event="edit">
+            <i class="layui-icon">&#xe642;</i>
+        </button>
+        <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" lay-event="delete">
+            <i class="layui-icon">&#xe640;</i>
+        </button>
     </div>
 </script>
 
@@ -97,11 +105,11 @@ layui.use('table', function(){
         , { field: 'PROD_TYPE_DESC', title: '說明', width: 120, sort: true, fixed: true}
         , { field: 'STUS_CTR', title: '庫存狀態', width: 110, sort: true, fixed: true, templet: '#stusTpl', align: 'right'}
         , { field: 'STUS_CTR_DESC', title: '說明', width: 130, sort: true, templet: '#stusTp2',fixed: true}
-        , { field: 'PROD_NO', title: '料號', width: 150, sort: true, fixed: true}
-        , { field: 'PROD_NAME', title: '物料名稱', width: 250, sort: true }
+        , { field: 'PROD_NO', title: '料號', width: 200, sort: true, fixed: true}
+        , { field: 'PROD_NAME', title: '物料名稱', width: 350, sort: true }
         , { field: 'LIST_NO', title: '單號', width: 150, sort: true }
         , { field: 'LINE_ID', title: '項次', width: 80, sort: true, align: 'right'}
-        , { field: 'LOT_NO', title: '批號', width: 100, sort: true }
+        , { field: 'LOT_NO', title: '批號', width: 150, sort: true }
         , { field: 'QTY', title: '數量', width: 100, align: 'right' }
         , { field: 'PDATE', title: '生產日期', width: 110, sort: true }
         , { field: 'STOREIN_DATE', title: '入庫日期', width: 110, sort: true }
@@ -139,7 +147,7 @@ layui.use('table', function(){
                 
                 layer.open({
                     type: 2,
-                    area: ['1000px', '800px'],
+                    area: ['1000px', '630px'],
                     fixed: false, //不固定
                     maxmin: true,
                     title: '新增庫存',
@@ -170,7 +178,7 @@ layui.use('table', function(){
                                             curr: 1 //重新从第 1 页开始
                                         }
                                         , where: {
-                                            SearchText: demoReload.val(),
+                                            SearchText: $('#demoReload').val(),
                                             AsrsID: $('#cbAsrsID').val(),
                                             ProdType: $('#cbProdType').val(),
                                             StusCtr: $('#cbStusCtr').val()

@@ -124,6 +124,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\WCSController.cs" />
     <Compile Include="Controllers\WMSController.cs" />
+    <Compile Include="Extensions\CacheExtensions.cs" />
     <Compile Include="Filters\CustomAuthenticationFilter.cs" />
     <Compile Include="Filters\CustomAuthorizeAttribute.cs" />
     <Compile Include="Global.asax.cs">
@@ -134,6 +135,7 @@
     <Compile Include="Models\WcsCrn.cs" />
     <Compile Include="Models\WcsDevice.cs" />
     <Compile Include="Models\WcsTrk.cs" />
+    <Compile Include="Models\WcsTrkDet.cs" />
     <Compile Include="Models\WmsBinsta.cs" />
     <Compile Include="Models\WmsProd.cs" />
     <Compile Include="Models\WmsStk.cs" />
@@ -150,11 +152,13 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\Style.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="Images\G.jpg" />
+    <Content Include="Images\login-bg.jpg" />
     <Content Include="layui-v2.6.8\layui\css\layui.css" />
     <Content Include="layui-v2.6.8\layui\css\modules\code.css" />
     <Content Include="layui-v2.6.8\layui\css\modules\laydate\default\laydate.css" />
@@ -211,6 +215,8 @@
     <Content Include="Views\WMS\VwBinSta.cshtml" />
     <Content Include="Views\WMS\VwAddWmsStk.cshtml" />
     <Content Include="Views\WMS\VwProdList.cshtml" />
+    <Content Include="Views\WCS\VwStoreIn.cshtml" />
+    <Content Include="Views\Account\Login2.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

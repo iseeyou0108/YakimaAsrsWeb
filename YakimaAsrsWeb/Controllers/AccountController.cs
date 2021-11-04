@@ -15,9 +15,16 @@ namespace YakimaAsrsWeb.Controllers
             return View();
         }
 
+        //Get Login page
+        [HttpGet]
+        public ActionResult Login2()
+        {
+            return View();
+        }
+
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult Login(Models.Account LoginUser)
+        public JsonResult Login(Models.Account LoginUser)
         {
             //驗證帳號密碼
             if (ModelState.IsValid)
@@ -29,27 +36,27 @@ namespace YakimaAsrsWeb.Controllers
                     {
                         Session["UserName"] = VerrifyResult.Data.Rows[0]["USER_NAME"].ToString();
                         Session["UserNo"] = LoginUser.UserNo;
-                        return RedirectToAction("Index", "Home");
+                        return Json(new Service.WcsCrnService.PostResponse() { Successed = true, Message = "" });
                     }
                     else
                     {
                         ModelState.AddModelError("", "帳號或密碼不正確");
-                        return View(LoginUser);
+                        return Json(new Service.WcsCrnService.PostResponse() { Successed = false, Message = "帳號或密碼不正確" });
                     }
                 }
                 else
                 {
                     ModelState.AddModelError("", VerrifyResult.Message);
-                    return View(LoginUser);
+                    return Json(new Service.WcsCrnService.PostResponse() { Successed = false, Message = VerrifyResult.Message });
                 }
             }
             else
             {
-                return View(LoginUser);
+                return Json("OK");
             }
         }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        
+        
         public ActionResult LogOff()
         {
             Session["UserName"] = string.Empty;

@@ -1,0 +1,237 @@
+﻿
+@{
+    ViewBag.Title = "VwStoreIn";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/layui-v2.6.8/layui/css/layui.css" rel="stylesheet" />
+
+<!DOCTYPE html>
+<span class="layui-breadcrumb">
+    @Html.ActionLink("首頁", "Index", "Home")
+    <a><cite>作業管理</cite></a>
+    <a><cite>入庫作業</cite></a>
+</span>
+<div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+    <ul class="layui-tab-title">
+        <li class="layui-this">空棧板入庫</li>
+        <li>成品入庫</li>
+        <li>模具入庫</li>
+        <li>五金件入庫</li>
+    </ul>
+    <div class="layui-tab-content" style="height: 100px;">
+        <div class="layui-tab-item layui-show">
+            <form class="layui-form layui-form-pane" action="">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">站台編號</label>
+                    <div class="layui-input-inline">
+                        <select name="DEV_NO" lay-verify="required">
+                            <option value=""></option>
+                            <option value="1182">1182</option>
+                            <option value="1192">1192</option>
+                            <option value="1292">1292</option>
+                            <option value="1392">1392</option>
+                            <option value="1492">1492</option>
+                            <option value="2132">2132</option>
+                            <option value="2142">2142</option>
+                            <option value="2152">2152</option>
+                            <option value="2232">2232</option>
+                            <option value="2242">2242</option>
+                            <option value="2252">2252</option>
+                            <option value="2342">2342</option>
+                            <option value="2352">2352</option>
+                            <option value="2442">2442</option>
+                            <option value="2452">2452</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="formPalletIn">提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="layui-tab-item">
+            <form class="layui-form layui-form-pane" action="">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">站台編號</label>
+                    <div class="layui-input-inline">
+                        <select name="DEV_NO" lay-verify="required">
+                            <option value=""></option>
+                            <option value="1182">1182</option>
+                            <option value="1192">1192</option>
+                            <option value="1292">1292</option>
+                            <option value="1392">1392</option>
+                            <option value="1492">1492</option>
+                            <option value="2142">2142</option>
+                            <option value="2152">2152</option>
+                            <option value="2242">2242</option>
+                            <option value="2252">2252</option>
+                            <option value="2342">2342</option>
+                            <option value="2352">2352</option>
+                            <option value="2442">2442</option>
+                            <option value="2452">2452</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">料號</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="PROD_NO" id="txtProdNo" required lay-verify="required" placeholder="請選取料號" autocomplete="off" class="layui-input">
+                    </div>
+                    <button class="layui-btn layui-btn-warm" onclick="OpenProductSearch()">選取</button>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">批號</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="LOT_NO" autocomplete="off" class="layui-input">
+                    </div>
+                    <label class="layui-form-label">檢驗批號</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="QC_LOT" autocomplete="off" class="layui-input">
+                    </div>
+                    <label class="layui-form-label">數量</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="QTY" lay-verify="required|number" placeholder="請輸入庫存數量" autocomplete="off" class="layui-input">
+                    </div>
+                    <label class="layui-form-label">單位</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="UNITS" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <table class="layui-hide" id="TrkDet"></table>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="formProdIn">提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="layui-tab-item">内容3</div>
+        <div class="layui-tab-item">内容4</div>
+    </div>
+</div>
+
+<script src="~/layui-v2.6.8/layui/layui.js"></script>
+<script>
+//Demo
+layui.use(['form','laydate','table'], function(){
+    var form = layui.form;
+    var laydate = layui.laydate;
+    var table = layui.table;
+
+    //执行一个laydate实例
+    laydate.render({
+        elem: '#txtPDate',
+        type: 'date',
+        format:'yyyy/MM/dd'
+    });
+
+    table.render({
+        elem: '#TrkDet'        
+        , cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+        , cols: [[
+            { field: 'PROD_NO', width: 120, title: '料號', sort: true }
+            , { field: 'PROD_NAME', width: 250, title: '物料描述' }
+        ]]
+        , data: [
+        ]
+    });
+
+      //监听提交
+        form.on('submit(formPalletIn)', function(data){
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("PalletIn", "WCS")",
+                data: JSON.stringify(data.field),
+                contentType: "application/json",
+                success: function (response) {
+
+                    JSON.stringify(response);
+                    if (response.Successed) {
+                        layer.msg('新增空棧板入庫作業成功~');
+                    }
+                    else {
+
+                        layer.msg(response.Message, { icon: 5 });
+                    }
+                },
+                failure: function (errMsg) {
+                    layer.msg(errMsg, { icon: 5 });
+                    return false;
+                },
+                error: function (xhr, status, err) {
+                    layer.msg(err, { icon: 5 });
+                }
+            })
+            
+            console.log(data);
+            return false;
+        })
+
+    //监听提交
+    form.on('submit(formProdIn)', function(data){
+        @*$.ajax({
+            type: "POST",
+            url: "@Url.Action("ProdIn", "WCS")",
+            data: JSON.stringify(data.field),
+            contentType: "application/json",
+            success: function (response) {
+
+                JSON.stringify(response);
+                if (response.Successed) {
+                    layer.msg('新增成品入庫作業成功~');
+                }
+                else {
+
+                    layer.msg(response.Message, { icon: 5 });
+                }
+            },
+            failure: function (errMsg) {
+                layer.msg(errMsg, { icon: 5 });
+                return false;
+            },
+            error: function (xhr, status, err) {
+                layer.msg(err, { icon: 5 });
+            }
+        })*@
+        console.log(data);
+        return false;
+    })
+
+    });
+
+    function OpenProductSearch() {
+        layer.open({
+            type: 2,
+            area: ['700px', '600px'],
+            fixed: false, //不固定
+            maxmin: true,
+            title: '選取料號',
+            btn: ['確定','取消'],
+            content: '@Url.Action("VwProdList","WMS")',
+            yes: function (index) {
+                var result = window["layui-layer-iframe" + index].returndata();
+                if (result != null) {
+                    //layer.msg(result.ProdNo);
+                    document.getElementById("txtProdNo").value = result.ProdNo;
+                    //document.getElementById("divProdName").innerHTML = result.ProdName;
+                    layer.close(index);
+                }
+                else {
+                    layer.msg('No Data');
+                }
+            }
+        });
+    }
+
+</script>

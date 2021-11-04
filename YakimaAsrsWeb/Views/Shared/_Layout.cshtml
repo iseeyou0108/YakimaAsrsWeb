@@ -16,7 +16,7 @@
     </style>
 </head>
 <body>
-   
+
 
     <div class="layui-layout layui-layout-admin">
         <div class="layui-header">
@@ -28,24 +28,19 @@
                     <i class="layui-icon layui-icon-spread-left"></i>
                 </li>
 
-                
+
             </ul>
             <ul class="layui-nav layui-layout-right">
                 <li class="layui-nav-item layui-hide layui-show-md-inline-block">
-                    <a href="javascript:;">
-                        <img src="~/Images/G.jpg" class="layui-nav-img"/>
+                    <a href="@Url.Action("LogOff", "Account")">
+                        <img src="~/Images/G.jpg" class="layui-nav-img" />
                         @Session["UserName"]
-                    </a>
-                    <dl class="layui-nav-child">
-                        <dd><a href="~/Account/LogOff">登出</a></dd>
-                        
-                    </dl>
-                </li>
-                <li class="layui-nav-item" lay-header-event="menuRight" lay-unselect>
-                    <a href="javascript:;">
-                        <i class="layui-icon layui-icon-more-vertical"></i>
+                        <i class="layui-icon layui-icon-logout"></i>
+
+
                     </a>
                 </li>
+                
             </ul>
         </div>
 
@@ -54,15 +49,17 @@
                 <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
                 <ul class="layui-nav layui-nav-tree" lay-filter="test">
                     <li class="layui-nav-item layui-nav-itemed">
-                        <a class="" href="javascript:;">作業管理</a>
+                        <a class="" href="javascript:;"><i class="layui-icon layui-icon-template-1"></i> 作業管理</a>
                         <dl class="layui-nav-child">
                             <dd>@Html.ActionLink("工作檔查詢維護", "VwTrk", "WCS")</dd>
-                            <dd>@Html.ActionLink("吊車狀態查詢維護","VwCrn","WCS")</dd>
-                            <dd>@Html.ActionLink("設備狀態查詢","VwDevice","WCS")</dd>
+                            <dd>@Html.ActionLink("吊車狀態查詢維護", "VwCrn", "WCS")</dd>
+                            <dd>@Html.ActionLink("設備狀態查詢", "VwDevice", "WCS")</dd>
+                            <dd>@Html.ActionLink("入庫作業", "VwStoreIn", "WCS")</dd>
+                            <dd>@Html.ActionLink("出庫作業", "VwStoreOut", "WCS")</dd>
                         </dl>
                     </li>
                     <li class="layui-nav-item layui-nav-itemed">
-                        <a href="javascript:;">庫存管理</a>
+                        <a href="javascript:;"><i class="layui-icon layui-icon-table"></i> 庫存管理</a>
                         <dl class="layui-nav-child">
                             <dd>@Html.ActionLink("庫存查詢", "VwStk", "WMS")</dd>
                             <dd>@Html.ActionLink("庫位狀態查詢維護", "VwBinSta", "WMS")</dd>
@@ -89,9 +86,9 @@
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
-    <script src="~/layui-v2.6.8/layui/layui.js"></script>
     @RenderSection("scripts", required: false)
 
+    @*<script src="~/layui-v2.6.8/layui/layui.js"></script>
     <script>
         //JS
         layui.use(['element', 'layer', 'util'], function () {
@@ -119,6 +116,6 @@
             });
 
         });
-    </script>
+    </script>*@
 </body>
 </html>

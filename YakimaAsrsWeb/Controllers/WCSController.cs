@@ -36,6 +36,16 @@ namespace YakimaAsrsWeb.Controllers
             return View();
         }
 
+        public ActionResult VwStoreIn()
+        {
+            return View();
+        }
+
+        public ActionResult VwStoreOut()
+        {
+            return View();
+        }
+
         public JsonResult GetWcsTrkData(string SearchText, int? AsrsID, int? Page, int? Limit)
         {
             Models.LayUITableData result = new Models.LayUITableData();
@@ -215,6 +225,77 @@ namespace YakimaAsrsWeb.Controllers
             }
             result.data = Crns.Skip((Page.Value - 1) * Limit.Value).Take(Limit.Value);
             return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public JsonResult PalletIn(Models.WcsTrk Item)
+        {
+            if (!ModelState.IsValid)
+                return Json(new Service.WcsCrnService.PostResponse() { Successed = false, Message = "Model state is not valid" });
+            if (string.IsNullOrWhiteSpace(Item.DEV_NO))
+                return Json(new Service.WcsCrnService.PostResponse() { Successed = false, Message = "站台編號(DEV_NO), 不可為空值" });
+
+            Item.ASRS_ID = int.Parse(Item.DEV_NO.Substring(0, 1));
+            Item.CREATE_BY = Session["UserNo"].ToString();
+            Item.CREATE_DATE = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+            Item.STEP = 0;
+            Item.STATUS = 0;
+            Item.OPN = 104;
+            Item.EMERGE = 0;
+            Item.IO = "I";
+            Item.USE_CRN_ID = 0;
+            Item.BIN_NO = "";
+            var GenSeqNo = TrkService.GetTrkSeqNo();
+            if (GenSeqNo.IsCompleted)
+            {
+                if (GenSeqNo.Result.Successed)
+                    Item.SER_NO = GenSeqNo.Result.SeqNo;
+                else
+                    return Json(new Service.WcsCrnService.PostResponse() { Successed = false, Message = GenSeqNo.Result.Message });
+            }
+
+            var result = TrkService.CreatePalletInTrk(Item, Session["UserNo"].ToString());
+            if (result.IsCompleted)
+            {
+                return Json(new Service.WcsCrnService.PostResponse() { Successed = result.Result.Successed, Message = result.Result.Message });
+            }
+            return Json("OK");
+        }
+
+        [HttpPost]
+        public JsonResult ProdIn(Models.WcsTrkDet Item)
+        {
+            if (!ModelState.IsValid)
+                return Json(new Service.WcsCrnService.PostResponse() { Successed = false, Message = "Model state is not valid" });
+            if (string.IsNullOrWhiteSpace(Item.DEV_NO))
+                return Json(new Service.WcsCrnService.PostResponse() { Successed = false, Message = "站台編號(DEV_NO), 不可為空值" });
+
+            Models.WcsTrk Trk = new Models.WcsTrk();
+            Trk.ASRS_ID = int.Parse(Item.DEV_NO.Substring(0, 1));
+            Trk.CREATE_BY = Session["UserNo"].ToString();
+            Trk.CREATE_DATE = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+            Trk.STEP = 0;
+            Trk.STATUS = 0;
+            Trk.OPN = 101;
+            Trk.EMERGE = 0;
+            Trk.IO = "I";
+            Trk.USE_CRN_ID = 0;
+            Trk.BIN_NO = "";
+            var GenSeqNo = TrkService.GetTrkSeqNo();
+            if (GenSeqNo.IsCompleted)
+            {
+                if (GenSeqNo.Result.Successed)
+                    Trk.SER_NO = GenSeqNo.Result.SeqNo;
+                else
+                    return Json(new Service.WcsCrnService.PostResponse() { Successed = false, Message = GenSeqNo.Result.Message });
+            }
+
+            var result = TrkService.CreateProdInTrk(Trk, Item, Session["UserNo"].ToString());
+            if (result.IsCompleted)
+            {
+                return Json(new Service.WcsCrnService.PostResponse() { Successed = result.Result.Successed, Message = result.Result.Message });
+            }
+            return Json("OK");
         }
 
         [HttpPost]

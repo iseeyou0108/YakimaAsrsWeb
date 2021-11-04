@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using YakimaAsrsWeb.Extensions;
 using YakimaAsrsWeb.Filters;
 
 namespace YakimaAsrsWeb.Controllers
@@ -60,9 +61,10 @@ namespace YakimaAsrsWeb.Controllers
 
         public JsonResult GetWmsProdData(string SearchText, int? Page, int? Limit)
         {
-            Models.LayUITableData result = new Models.LayUITableData();
-            var DataResult = StkService.GetProdListData();
             List<Models.WmsProd> Prods = new List<Models.WmsProd>();
+            Models.LayUITableData result = new Models.LayUITableData();
+            var DataResult = StkService.GetProdListData(SearchText);
+           
             if (DataResult.IsCompleted)
             {
                 if (DataResult.Result.Successed)
@@ -77,12 +79,12 @@ namespace YakimaAsrsWeb.Controllers
                         });
                     }
 
-                    if (!string.IsNullOrEmpty(SearchText))
-                    {
-                        Prods = Prods.Where(o => o.ProdNo.Contains(SearchText)
-                        || o.ProdName.Contains(SearchText)
-                        ).ToList();
-                    }
+                    //if (!string.IsNullOrEmpty(SearchText))
+                    //{
+                    //    Prods = Prods.Where(o => o.ProdNo.Contains(SearchText)
+                    //    || o.ProdName.Contains(SearchText)
+                    //    ).ToList();
+                    //}
                     result.count = Prods.Count;
 
                     result.data = Prods;
@@ -268,13 +270,24 @@ namespace YakimaAsrsWeb.Controllers
         }
 
         [HttpPost]
+        public JsonResult AddWmsStk(Models.WmsStk Item)
+        {
+            var result = StkService.AddWmsStks(new List<Models.WmsStk>() { Item }, Session["UserNo"].ToString());
+            if (result.IsCompleted)
+            {
+                return Json(new Service.WcsCrnService.PostResponse() { Successed = result.Result.Successed, Message = result.Result.Message });
+            }
+            return Json("OK");
+        }
+
+        [HttpPost]
         public JsonResult DeleteWmsStk(List<Models.WmsStk> Items)
         {
-            //var result = StkService.DeleteWmsStks(Items, Session["UserNo"].ToString());
-            //if (result.IsCompleted)
-            //{
-            //    return Json(new Service.WcsCrnService.PostResponse() { Successed = result.Result.Successed, Message = result.Result.Message });
-            //}
+            var result = StkService.DeleteWmsStks(Items, Session["UserNo"].ToString());
+            if (result.IsCompleted)
+            {
+                return Json(new Service.WcsCrnService.PostResponse() { Successed = result.Result.Successed, Message = result.Result.Message });
+            }
             return Json("OK");
         }
     }

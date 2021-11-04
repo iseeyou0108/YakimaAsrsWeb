@@ -23,7 +23,7 @@ namespace YakimaAsrsWeb.Filters
                 new RouteValueDictionary
                 {
                      { "controller", "Account" },
-                     { "action", "Login" }
+                     { "action", "Login2" }
                 });
             }
         }
